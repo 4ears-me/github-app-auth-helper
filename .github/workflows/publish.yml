@@ -13,10 +13,10 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 22
-      - run: npm prebuild
-      - run: npm lint
-      - run: npm test
-      - run: npm build:release
+      - run: npm run prebuild
+      - run: npm run lint
+      - run: npm run test
+      - run: npm run build:release
       - uses: JS-DevTools/npm-publish@v3
         with:
           token: ${{ secrets.NPM_KEY }}
