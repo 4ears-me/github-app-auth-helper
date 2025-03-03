@@ -7,7 +7,7 @@ permissions:
 
 jobs:
   build:
-    runs-on: codebuild-GithubActionsSamsaraHQ-${{ github.run_id }}-${{ github.run_attempt }}
+    runs-on: codebuild-4ears-me-${{ github.run_id }}-${{ github.run_attempt }}
 
     steps:
       - uses: actions/checkout@v4
