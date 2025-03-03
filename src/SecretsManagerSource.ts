@@ -5,14 +5,16 @@ import {
   fromWebToken,
 } from '@aws-sdk/credential-providers';
 import { AwsCredentialIdentityProvider } from '@aws-sdk/types';
-import { ParsedArgs } from "minimist";
+import { ParsedArgs } from 'minimist';
 
 export class SecretsManagerSource implements SecretProvider {
   constructor(private readonly secretsManager: SecretsManager) {}
 
   validateParameters(args: ParsedArgs): void {
     if (!args.secretArn) {
-      process.stderr.write('--secretArn required for using the SecretsManager source');
+      process.stderr.write(
+        '--secretArn required for using the SecretsManager source',
+      );
       process.exit(1);
     }
 

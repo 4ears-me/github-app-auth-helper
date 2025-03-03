@@ -1,6 +1,6 @@
 import { AppCredentials, SecretProvider } from './Helper.js';
 import * as fs from 'fs-extra';
-import { ParsedArgs } from "minimist";
+import { ParsedArgs } from 'minimist';
 
 export class FileSource implements SecretProvider {
   validateParameters(args: ParsedArgs): void {
