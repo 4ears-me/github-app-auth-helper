@@ -1,34 +1,40 @@
-/**
- * Some predefined delay values (in milliseconds).
- */
-export enum Delays {
-  Short = 500,
-  Medium = 2000,
-  Long = 5000,
-}
+#!/usr/bin/env node
 
-/**
- * Returns a Promise<string> that resolves after a given time.
- *
- * @param {string} name - A name.
- * @param {number=} [delay=Delays.Medium] - A number of milliseconds to delay resolution of the Promise.
- * @returns {Promise<string>}
- */
-function delayedHello(
-  name: string,
-  delay: number = Delays.Medium,
-): Promise<string> {
-  return new Promise((resolve: (value?: string) => void) =>
-    setTimeout(() => resolve(`Hello, ${name}`), delay),
-  );
-}
+import parseArgs from 'minimist';
+import { SecretsManagerSource } from './SecretsManagerSource.js';
+import { FileSource } from './FileSource.js';
+import { CliSource } from './CliSource.js';
+import { Helper, SecretProvider } from './Helper.js';
 
-// Please see the comment in the .eslintrc.json file about the suppressed rule!
-// Below is an example of how to use ESLint errors suppression. You can read more
-// at https://eslint.org/docs/latest/user-guide/configuring/rules#disabling-rules
+const args = parseArgs(process.argv.slice(2));
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type, @typescript-eslint/no-explicit-any
-export async function greeter(name: any) {
-  // The name parameter should be of type string. Any is used only to trigger the rule.
-  return await delayedHello(name, Delays.Long);
+if (args._[0] === 'get') {
+  let credSource: SecretProvider;
+  switch (args.source) {
+    case 'sm': {
+      const secretsManager = await SecretsManagerSource.build(args);
+      credSource = new SecretsManagerSource(secretsManager);
+      break;
+    }
+    case 'file': {
+      credSource = new FileSource();
+      break;
+    }
+    case 'cli': {
+      credSource = new CliSource();
+      break;
+    }
+    default: {
+      console.error(
+        '--source must be specified as sm (AWS Secrets Manager), file, or cli',
+      );
+      process.exit(1);
+    }
+  }
+
+  const helper = new Helper(credSource);
+  if (await helper.shouldRun(process.stdin)) {
+    const output = await helper.getOutput(args);
+    process.stdout.write(output);
+  }
 }
