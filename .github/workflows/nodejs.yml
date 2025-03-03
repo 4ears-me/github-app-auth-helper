@@ -2,9 +2,12 @@ name: Node.js CI
 
 on: [push]
 
+permissions:
+  contents: read
+
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: codebuild-4ears-me-${{ github.run_id }}-${{ github.run_attempt }}
 
     steps:
       - uses: actions/checkout@v4
